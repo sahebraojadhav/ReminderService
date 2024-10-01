@@ -3,24 +3,22 @@ const bodyParser=require('body-parser');
 
 const {PORT}=require('./config/serverConfig');
 
-const {sendBasicEmail}=require('./services/email-service')
+const TicketController=require('./controllers/ticket-controller');
 
-const cron=require('node-cron')
+const {sendBasicEmail}=require('./services/email-service')
+const jobs=require('./utils/job');
 
 const setUpAndStartServer=()=>{
     const app=express();
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended:true}));
 
+    app.post('/api/v1/tickets',TicketController.create);
+
     app.listen(PORT,()=>{
         console.log(`server is running on PORT ${PORT}`);
-    
-        sendBasicEmail(
-            'support@admin.com',
-            'formypromootp@gmail.com',
-            'this is testing email',
-            'hey how are u i hope u are well'
-        )
+        jobs();
+        
     })
 
 
